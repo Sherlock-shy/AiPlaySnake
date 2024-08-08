@@ -25,7 +25,7 @@ BLUE2 = (0, 100, 255)
 BLACK = (0,0,0)
 
 BLOCK_SIZE = 20
-SPEED = 20
+SPEED = 40
 
 class SnakeGameAI:
     
@@ -69,7 +69,7 @@ class SnakeGameAI:
                 quit()
         
         # 2. move
-        self._move(self.direction) # update the head
+        self._move(action) # update the head
         self.snake.insert(0, self.head)
         
         # 3. check if game over
@@ -125,14 +125,14 @@ class SnakeGameAI:
         clock_wise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
         idx = clock_wise.index(self.direction)
         
-        if np.array_equal(action, [1,0,0]):
+        if np.array_equal(action, [1, 0, 0]):
             new_dir = clock_wise[idx] # no change
-        elif np.array_equal(action, [0,1,0]):
-            new_dir = clock_wise[(idx+1)%4] # right turn r -> d -> l -> u
-            new_dir = clock_wise[idx]
+        elif np.array_equal(action, [0, 1,0]):
+            next_idx = (idx + 1)%4 # right turn r -> d -> l -> u
+            new_dir = clock_wise[next_idx]
         else: # [0,0,1]
-            new_dir = clock_wise[(idx-1)%4] # left turn r -> u -> l -> d
-            new_dir = clock_wise[idx]
+            next_idx = (idx - 1) % 4 # left turn r -> u -> l -> d
+            new_dir = clock_wise[next_idx]
             
         self.direction = new_dir
 

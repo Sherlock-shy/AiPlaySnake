@@ -9,7 +9,7 @@ from helper import plot
 
 MAX_MEMORY =  100_000
 BATCH_SIZE = 1000
-LR = 0.005
+LR = 0.001
 
 class Agent:
 
@@ -45,10 +45,10 @@ class Agent:
             (dir_l and game.is_collision(point_u)) or
             (dir_r and game.is_collision(point_d)),
 
-            (dir_d and game.is_collision(point_u)) or
-            (dir_u and game.is_collision(point_d)) or
-            (dir_r and game.is_collision(point_l)) or
-            (dir_l and game.is_collision(point_r)),
+            (dir_d and game.is_collision(point_r)) or
+            (dir_u and game.is_collision(point_l)) or
+            (dir_r and game.is_collision(point_u)) or
+            (dir_l and game.is_collision(point_d)),
 
             dir_l,
             dir_r,
@@ -73,8 +73,8 @@ class Agent:
         else:
             mini_sample = self.memory
         
-            states, actions, rewards, next_states, dones = zip(*mini_sample)
-            self.trainer.train_step(states, actions, rewards, next_states, dones)
+        states, actions, rewards, next_states, dones = zip(*mini_sample)
+        self.trainer.train_step(states, actions, rewards, next_states, dones)
         
 
     def train_short_memory(self, state, action, reward, next_state, done):
@@ -130,6 +130,7 @@ def train():
                 agent.model.save()
 
             print(f'Game: {agent.n_games}, Score: {score}, Record: {record}')
+
             plot_scores.append(score)
             total_score += score
             mean_score = total_score / agent.n_games
