@@ -64,13 +64,21 @@ class Agent:
 
     def remember(self, state, action, reward, next_state, done):
         self.mempory.append(state, action, reward, next_state, done)
-        
+
     
     def train_long_memory(self):
-        pass
+        if len(self.memory) > BATCH_SIZE:
+            mini_sample = random.sample(self.memory, BATCH_SIZE) # list of tuples
+        else:
+            mini_sample = self.memory
+        
+            states, actions, rewards, next_states, dones = zip(*mini_sample)
+            self.trainer.train_step(states, actions, reward, next_states, dones)
+            
 
     def train_short_memory(self)
-        pass
+        self.trainer.train_step(state, action, reward, next_state, done)
+
     
     def get_action(self, state)
         pass
