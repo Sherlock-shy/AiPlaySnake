@@ -2,7 +2,7 @@ import torch
 import random
 import numpy as np 
 from collections import deque
-from game import SnakeGameAI, Direction, Point
+from snake_game import SnakeGameAI, Direction, Point
 from model import Linear_QNet, QTrainer
 from helper import plot
 
@@ -18,7 +18,7 @@ class Agent:
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_Qnet(11, 256, 3)
+        self.model = Linear_QNet(11, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
     
     def get_state(self, game):
@@ -63,10 +63,8 @@ class Agent:
 
         return np.array(state, dtype=int)
 
-
-
     def remember(self, state, action, reward, next_state, done):
-        self.mempory.append(state, action, reward, next_state, done)
+        self.memory.append((state, action, reward, next_state, done))
 
     
     def train_long_memory(self):
@@ -76,7 +74,7 @@ class Agent:
             mini_sample = self.memory
         
             states, actions, rewards, next_states, dones = zip(*mini_sample)
-            self.trainer.train_step(states, actions, reward, next_states, dones)
+            self.trainer.train_step(states, actions, rewards, next_states, dones)
         
 
     def train_short_memory(self, state, action, reward, next_state, done):
@@ -109,10 +107,10 @@ def train():
         state_old = agent.get_state(game)
 
         # get move
-        final_move = agent.get_action(state)
+        final_move = agent.get_action(state_old)
 
         # perform move and get new state
-        reward, done, score = game.play_step(ginal_move)
+        reward, done, score = game.play_step(final_move)
         state_new = agent.get_state(game)
 
         # train short memory

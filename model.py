@@ -12,7 +12,7 @@ class Linear_QNet(nn.Module):
 
     def forward(self, x):
         x = F.relu(self.linear1(x))
-        x = self.lenear2(x)
+        x = self.linear2(x)
         return x
 
     def save(self, file_name='model.pth'):
@@ -31,7 +31,7 @@ class QTrainer:
         self.optimizer = optim.Adam(model.parameters(), lr=self.lr)
         self.criterion = nn.MSELoss()
 
-    def train_step(self, stat, action, reward, next_state, done):
+    def train_step(self, state, action, reward, next_state, done):
         state = torch.tensor(state, dtype=torch.float)
         next_state = torch.tensor(next_state, dtype=torch.float)
         action = torch.tensor(action, dtype=torch.long)
@@ -56,7 +56,7 @@ class QTrainer:
 
             target[idx][torch.argmax(action[idx]).item()] = Q_new
         
-        self.optimizer.zero.grad()
+        self.optimizer.zero_grad()
         loss = self.criterion(target, pred)
         loss.backward()
 
