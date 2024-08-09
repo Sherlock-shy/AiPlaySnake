@@ -5,6 +5,7 @@ from collections import deque
 from snake_game import SnakeGameAI, Direction, Point
 from model import Linear_QNet, QTrainer
 from helper import plot
+import os
 
 
 MAX_MEMORY =  100_000
@@ -20,7 +21,21 @@ class Agent:
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
         self.model = Linear_QNet(11, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
+        self.load_model()
+
+    def load_model(self, file_name='model.pth'):
+        model_folder_path = './model'
+        file_name = os.path.join(model_folder_path, file_name)
+
+        if os.path.exists(file_name):
+            self.model.load_state_dict(torch.load(file_name))
+            print("Model loaded from", file_name)
+        else:
+            print("No pre-trained model found, starting fresh.")
     
+    def save_model(self, file_name='model.pth'):
+        self.model.save(file_name)
+
     def get_state(self, game):
         head = game.snake[0]
         point_l = Point(head.x - 20, head.y)
@@ -75,6 +90,8 @@ class Agent:
         
         states, actions, rewards, next_states, dones = zip(*mini_sample)
         self.trainer.train_step(states, actions, rewards, next_states, dones)
+
+        self.save_model()
         
 
     def train_short_memory(self, state, action, reward, next_state, done):
